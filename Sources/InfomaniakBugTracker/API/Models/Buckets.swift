@@ -19,7 +19,7 @@
 import Foundation
 
 struct Buckets: Decodable {
-    let current: PartialProject
+    let current: PartialProject?
     let list: [Project]
 
     private enum CodingKeys: String, CodingKey {
@@ -29,7 +29,7 @@ struct Buckets: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
-        current = try values.decode(PartialProject.self, forKey: .current)
+        current = try values.decodeIfPresent(PartialProject.self, forKey: .current)
         let dictionary = try values.decode([String: PartialProject].self, forKey: .list)
         list = dictionary.map { Project(identifier: $0, partialProject: $1) }
     }

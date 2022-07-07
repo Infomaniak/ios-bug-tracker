@@ -70,8 +70,8 @@ class ReportApiFetcher {
         self.accessToken = accessToken
     }
 
-    func buckets(route: String, project: String, serviceId: Int) async throws -> Buckets {
-        try await makeRequest(path: "/api/components/report?route=\(route)&project=\(project)&service=\(serviceId)")
+    func buckets(route: String? = nil, project: String, serviceId: Int? = nil) async throws -> Buckets {
+        try await makeRequest(path: "/api/components/report?route=\(route ?? "null")&project=\(project)&service=\(serviceId ?? 0)")
     }
 
     func send(report: Report) async throws -> Bool {

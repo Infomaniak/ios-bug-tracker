@@ -20,11 +20,11 @@ import Foundation
 
 public struct BugTrackerInfo {
     let accessToken: String
-    let route: String
+    let route: String?
     let project: String
-    let serviceId: Int
+    let serviceId: Int?
 
-    public init(accessToken: String, route: String, project: String, serviceId: Int) {
+    public init(accessToken: String, route: String? = nil, project: String, serviceId: Int? = nil) {
         self.accessToken = accessToken
         self.route = route
         self.project = project

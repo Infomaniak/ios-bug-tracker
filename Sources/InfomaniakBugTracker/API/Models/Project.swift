@@ -41,7 +41,7 @@ struct Project: Decodable {
     let actions: [String: ProjectAction]
 
     var allowedReportTypes: [ReportType] {
-        return actions.keys.compactMap { ReportType(rawValue: $0) }
+        return actions.keys.compactMap { ReportType(rawValue: $0) }.sorted(by: { $0.rawValue < $1.rawValue })
     }
 
     init(identifier: String, enabled: Bool, title: String, projects: [String]?, servicesId: [Int]? /* , routeSlugs: [String: [String]]? */, actions: [String: ProjectAction]) {

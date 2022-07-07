@@ -31,7 +31,7 @@ public struct BugTrackerView: View {
         _isPresented = isPresented
         let extra: ReportExtra
         if let info = info {
-            extra = ReportExtra(project: info.project, route: info.route, userAgent: "")
+            extra = ReportExtra(project: info.project, route: info.route ?? "null", userAgent: "")
         } else {
             extra = ReportExtra(project: "", route: "", userAgent: "")
         }
@@ -87,9 +87,11 @@ public struct BugTrackerView: View {
             do {
                 let buckets = try await ReportApiFetcher.instance.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
                 projects = buckets.list
-                guard let currentProject = buckets.list.first(where: { $0.title.caseInsensitiveCompare(buckets.current.title) == .orderedSame }) else { return }
+                guard let currentProject = buckets.list.first(where: { $0.title.caseInsensitiveCompare(buckets.current?.title ?? "") == .orderedSame }) else { return }
                 report.bucketIdentifier = currentProject.identifier
-                if let firstType = currentProject.allowedReportTypes.first { report.type = firstType }
+                if let firstType = currentProject.allowedReportTypes.first {
+                    report.type = firstType
+                }
                 reportTypes = currentProject.allowedReportTypes
             } catch {
                 print("[BUG TRACKER] Error while fetching buckets: \(error)")

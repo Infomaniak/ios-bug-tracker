@@ -18,9 +18,16 @@
 
 import Foundation
 
-struct BugTrackerInfo {
+public struct BugTrackerInfo {
     let accessToken: String
     let route: String
     let project: String
     let serviceId: Int
+
+    public init(accessToken: String, route: String, project: String, serviceId: Int) {
+        self.accessToken = accessToken
+        self.route = route
+        self.project = project
+        self.serviceId = serviceId
+    }
 }

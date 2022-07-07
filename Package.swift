@@ -5,12 +5,15 @@ import PackageDescription
 
 let package = Package(
     name: "InfomaniakBugTracker",
-    platforms: [.iOS(.v15)],
+    platforms: [
+        .iOS(.v15),
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "InfomaniakBugTracker",
-            targets: ["InfomaniakBugTracker"]),
+            targets: ["InfomaniakBugTracker"]
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -21,8 +24,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "InfomaniakBugTracker",
-            dependencies: []),
+            dependencies: []
+        ),
         .testTarget(
             name: "InfomaniakBugTrackerTests",
-            dependencies: ["InfomaniakBugTracker"]),
-    ])
+            dependencies: ["InfomaniakBugTracker"]
+        ),
+    ]
+)

@@ -18,7 +18,7 @@
 
 import SwiftUI
 
-struct BugTrackerView: View {
+public struct BugTrackerView: View {
     @Binding var isPresented: Bool
     let info: BugTrackerInfo
 
@@ -26,7 +26,7 @@ struct BugTrackerView: View {
     @State private var reportTypes: [ReportType] = ReportType.allCases
     @State private var report: Report
 
-    init(isPresented: Binding<Bool>, info: BugTrackerInfo) {
+    public init(isPresented: Binding<Bool>, info: BugTrackerInfo) {
         _isPresented = isPresented
         self.info = info
         ReportApiFetcher.instance.setAccessToken(info.accessToken)
@@ -38,7 +38,7 @@ struct BugTrackerView: View {
                                              extra: ReportExtra(project: info.project, route: info.route, userAgent: "InfomaniakBugTracker/1")))
     }
 
-    var body: some View {
+    public var body: some View {
         NavigationView {
             Form {
                 Picker("Projet", selection: $report.bucketIdentifier) {

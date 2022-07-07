@@ -19,13 +19,15 @@
 import SwiftUI
 
 struct BugTrackerView: View {
+    @Binding var isPresented: Bool
     let info: BugTrackerInfo
 
     @State private var projects: [Project] = []
     @State private var reportTypes: [ReportType] = ReportType.allCases
     @State private var report: Report
 
-    init(info: BugTrackerInfo) {
+    init(isPresented: Binding<Bool>, info: BugTrackerInfo) {
+        _isPresented = isPresented
         self.info = info
         ReportApiFetcher.instance.setAccessToken(info.accessToken)
         _report = State(initialValue: Report(bucketIdentifier: "",
@@ -67,6 +69,9 @@ struct BugTrackerView: View {
             }
             .navigationTitle("Reporter un bug")
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler", action: cancel)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Soumettre", action: submit)
                 }
@@ -88,6 +93,10 @@ struct BugTrackerView: View {
         }
     }
 
+    private func cancel() {
+        isPresented = false
+    }
+
     private func submit() {
         Task {
             do {
@@ -101,6 +110,7 @@ struct BugTrackerView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        BugTrackerView(info: .init(accessToken: "", route: "workspace.mail", project: "workspace3", serviceId: 23))
+        BugTrackerView(isPresented: .constant(true),
+                       info: .init(accessToken: "", route: "workspace.mail", project: "workspace3", serviceId: 23))
     }
 }

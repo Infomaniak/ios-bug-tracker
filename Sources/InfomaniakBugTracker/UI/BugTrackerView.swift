@@ -20,22 +20,27 @@ import SwiftUI
 
 public struct BugTrackerView: View {
     @Binding var isPresented: Bool
-    let info: BugTrackerInfo
 
     @State private var projects: [Project] = []
     @State private var reportTypes: [ReportType] = ReportType.allCases
     @State private var report: Report
 
-    public init(isPresented: Binding<Bool>, info: BugTrackerInfo) {
+    private let info = BugTracker.instance.info
+
+    public init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
-        self.info = info
-        ReportApiFetcher.instance.setAccessToken(info.accessToken)
+        let extra: ReportExtra
+        if let info = info {
+            extra = ReportExtra(project: info.project, route: info.route, userAgent: "")
+        } else {
+            extra = ReportExtra(project: "", route: "", userAgent: "")
+        }
         _report = State(initialValue: Report(bucketIdentifier: "",
                                              type: .bugs,
                                              priority: .normal,
                                              subject: "",
                                              description: "",
-                                             extra: ReportExtra(project: info.project, route: info.route, userAgent: "InfomaniakBugTracker/1")))
+                                             extra: extra))
     }
 
     public var body: some View {
@@ -78,17 +83,16 @@ public struct BugTrackerView: View {
             }
         }
         .task {
+            guard let info = info else { return }
             do {
                 let buckets = try await ReportApiFetcher.instance.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
                 projects = buckets.list
                 guard let currentProject = buckets.list.first(where: { $0.title.caseInsensitiveCompare(buckets.current.title) == .orderedSame }) else { return }
                 report.bucketIdentifier = currentProject.identifier
-                if let firstType = currentProject.allowedReportTypes.first {
-                    report.type = firstType
-                }
+                if let firstType = currentProject.allowedReportTypes.first { report.type = firstType }
                 reportTypes = currentProject.allowedReportTypes
             } catch {
-                print("Error while fetching buckets: \(error)")
+                print("[BUG TRACKER] Error while fetching buckets: \(error)")
             }
         }
     }
@@ -102,7 +106,7 @@ public struct BugTrackerView: View {
             do {
                 _ = try await ReportApiFetcher.instance.send(report: report)
             } catch {
-                print("Error while sending report: \(error)")
+                print("[BUG TRACKER] Error while sending report: \(error)")
             }
         }
     }
@@ -110,7 +114,6 @@ public struct BugTrackerView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        BugTrackerView(isPresented: .constant(true),
-                       info: .init(accessToken: "", route: "workspace.mail", project: "workspace3", serviceId: 23))
+        BugTrackerView(isPresented: .constant(true))
     }
 }

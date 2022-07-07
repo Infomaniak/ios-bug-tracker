@@ -25,6 +25,7 @@ struct Report: Encodable {
     var subject: String
     var description: String
     var extra: ReportExtra
+    var files: [ReportFile]
 
     private enum CodingKeys: String, CodingKey {
         case bucketIdentifier, type, priority, subject, description, extra

@@ -16,11 +16,27 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+import SwiftUI
+import UniformTypeIdentifiers
 
-enum ReportError: Error {
-    case invalidURL
-    case httpError(status: Int)
-    case apiError(ApiError)
-    case cannotConvertImageToData
+struct ReportFile: Encodable, Equatable {
+    let name: String
+    let data: Data
+    let uti: UTType
+
+    var systemIconName: String {
+        if uti.conforms(to: .image) {
+            return "photo"
+        } else if uti.conforms(to: .video) {
+            return "play.rectangle"
+        } else if uti.conforms(to: .plainText) {
+            return "doc.text"
+        } else if uti.conforms(to: .rtf) || uti.conforms(to: .rtfd) {
+            return "doc.richtext"
+        } else if uti.conforms(to: .archive) {
+            return "doc.zipper"
+        } else {
+            return "doc"
+        }
+    }
 }

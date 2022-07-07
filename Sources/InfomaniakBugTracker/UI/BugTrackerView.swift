@@ -24,6 +24,8 @@ public struct BugTrackerView: View {
     @State private var projects: [Project] = []
     @State private var reportTypes: [ReportType] = ReportType.allCases
     @State private var report: Report
+    @State private var showingImagePicker = false
+    @State private var showingDocumentPicker = false
 
     private let info = BugTracker.instance.info
 
@@ -40,37 +42,63 @@ public struct BugTrackerView: View {
                                              priority: .normal,
                                              subject: "",
                                              description: "",
-                                             extra: extra))
+                                             extra: extra,
+                                             files: []))
     }
 
     public var body: some View {
         NavigationView {
             Form {
-                Picker("Projet", selection: $report.bucketIdentifier) {
-                    ForEach(projects, id: \.identifier) { project in
-                        Text(project.title)
-                            .tag(project.identifier)
+                Section {
+                    Picker("Projet", selection: $report.bucketIdentifier) {
+                        ForEach(projects, id: \.identifier) { project in
+                            Text(project.title)
+                                .tag(project.identifier)
+                        }
                     }
+
+                    Picker("Type", selection: $report.type) {
+                        ForEach(reportTypes, id: \.rawValue) { type in
+                            Text(type.title)
+                                .tag(type)
+                        }
+                    }
+
+                    Picker("Priorité", selection: $report.priority) {
+                        ForEach(ReportPriority.allCases, id: \.rawValue) { priority in
+                            Text(priority.title)
+                                .tag(priority)
+                        }
+                    }
+
+                    TextField("Sujet", text: $report.subject)
+
+                    TextEditor(text: $report.description)
+                        .frame(height: 200)
                 }
 
-                Picker("Type", selection: $report.type) {
-                    ForEach(reportTypes, id: \.rawValue) { type in
-                        Text(type.title)
-                            .tag(type)
+                Section(header: Text("Fichiers"), footer: Text("Vous pouvez ajouter des fichiers (32 MB maximum) pour aider à mieux comprendre votre bug.")) {
+                    ForEach(report.files, id: \.name) { file in
+                        FileAttachmentCell(file: file) {
+                            remove(file: file)
+                        }
+                    }
+
+                    Menu {
+                        Button {
+                            showingImagePicker = true
+                        } label: {
+                            Label("Depuis la photothèque", systemImage: "photo.on.rectangle")
+                        }
+                        Button {
+                            showingDocumentPicker = true
+                        } label: {
+                            Label("Depuis Fichiers", systemImage: "folder")
+                        }
+                    } label: {
+                        Label("Ajouter un fichier", systemImage: "paperclip")
                     }
                 }
-
-                Picker("Priorité", selection: $report.priority) {
-                    ForEach(ReportPriority.allCases, id: \.rawValue) { priority in
-                        Text(priority.title)
-                            .tag(priority)
-                    }
-                }
-
-                TextField("", text: $report.subject, prompt: Text("Sujet"))
-
-                TextEditor(text: $report.description)
-                    .frame(height: 200)
             }
             .navigationTitle("Reporter un bug")
             .toolbar {
@@ -81,6 +109,12 @@ public struct BugTrackerView: View {
                     Button("Soumettre", action: submit)
                 }
             }
+        }
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(completion: add(file:))
+        }
+        .sheet(isPresented: $showingDocumentPicker) {
+            DocumentPicker(completion: add(file:))
         }
         .task {
             guard let info = info else { return }
@@ -96,6 +130,19 @@ public struct BugTrackerView: View {
             } catch {
                 print("[BUG TRACKER] Error while fetching buckets: \(error)")
             }
+        }
+    }
+
+    private func add(file: ReportFile) {
+        withAnimation {
+            report.files.append(file)
+        }
+    }
+
+    private func remove(file: ReportFile) {
+        guard let index = report.files.firstIndex(of: file) else { return }
+        _ = withAnimation {
+            report.files.remove(at: index)
         }
     }
 

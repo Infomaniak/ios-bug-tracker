@@ -74,7 +74,7 @@ class ReportApiFetcher {
         try await makeRequest(path: "/api/components/report?route=\(route ?? "null")&project=\(project)&service=\(serviceId ?? 0)")
     }
 
-    func send(report: Report) async throws -> Bool {
+    func send(report: Report) async throws -> ReportResult {
         try await makeRequest(method: .post, path: "/api/components/report", body: formEncoder.encode(report))
     }
 }

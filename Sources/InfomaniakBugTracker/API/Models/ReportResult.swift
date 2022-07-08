@@ -18,31 +18,7 @@
 
 import Foundation
 
-enum ReportError: LocalizedError {
-    case invalidURL
-    case httpError(status: Int)
-    case apiError(ApiError)
-    case cannotConvertImageToData
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Invalid URL"
-        case .httpError(let status):
-            return "HTTP error \(status)"
-        case .apiError:
-            return "API error"
-        case .cannotConvertImageToData:
-            return "Cannot convert image to data"
-        }
-    }
-
-    var details: String {
-        switch self {
-        case .apiError(let apiError):
-            return apiError.description
-        default:
-            return "An error occured, please try again."
-        }
-    }
+struct ReportResult: Decodable {
+    let state: String
+    let url: String
 }

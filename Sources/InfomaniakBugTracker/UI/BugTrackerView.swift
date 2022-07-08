@@ -26,6 +26,10 @@ public struct BugTrackerView: View {
     @State private var report: Report
     @State private var showingImagePicker = false
     @State private var showingDocumentPicker = false
+    @State private var showingSuccessMessage = false
+    @State private var showingErrorMessage = false
+    @State private var result: ReportResult?
+    @State private var error: ReportError?
 
     public init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
@@ -108,6 +112,23 @@ public struct BugTrackerView: View {
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker(completion: add(file:))
         }
+        .alert(result?.state ?? "Success", isPresented: $showingSuccessMessage, presenting: result, actions: { result in
+            Button("Open issue") {
+                isPresented = false
+                guard let url = URL(string: result.url) else { return }
+                UIApplication.shared.open(url)
+            }
+            Button("OK", role: .cancel) {
+                isPresented = false
+            }
+        }, message: { result in
+            Text("URL: \(result.url)")
+        })
+        .alert(isPresented: $showingErrorMessage, error: error, actions: { _ in
+            // Default button
+        }, message: { error in
+            Text(error.details)
+        })
         .task {
             guard let info = BugTracker.instance.info else { return }
             do {
@@ -145,7 +166,12 @@ public struct BugTrackerView: View {
     private func submit() {
         Task {
             do {
-                _ = try await ReportApiFetcher.instance.send(report: report)
+                result = try await ReportApiFetcher.instance.send(report: report)
+                showingSuccessMessage = true
+            } catch let error as ReportError {
+                print("[BUG TRACKER] Error while sending report: \(error)")
+                self.error = error
+                showingErrorMessage = true
             } catch {
                 print("[BUG TRACKER] Error while sending report: \(error)")
             }

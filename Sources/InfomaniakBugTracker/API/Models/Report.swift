@@ -27,8 +27,25 @@ struct Report: Encodable {
     var extra: [String: String]
     var files: [ReportFile]
 
-    private enum CodingKeys: String, CodingKey {
-        case bucketIdentifier = "bucket_identifier", type, priority, subject, description, extra
+    private struct CodingKeys: CodingKey {
+        var stringValue: String
+
+        init?(stringValue: String) {
+            self.stringValue = stringValue
+        }
+
+        var intValue: Int?
+
+        init?(intValue: Int) {
+            return nil
+        }
+
+        static let bucketIdentifier = CodingKeys(stringValue: "bucket_identifier")!
+        static let type = CodingKeys(stringValue: "type")!
+        static let priority = CodingKeys(stringValue: "priority")!
+        static let subject = CodingKeys(stringValue: "subject")!
+        static let description = CodingKeys(stringValue: "description")!
+        static let extra = CodingKeys(stringValue: "extra")!
     }
 
     func encode(to encoder: Encoder) throws {
@@ -39,5 +56,8 @@ struct Report: Encodable {
         try container.encode(subject, forKey: .subject)
         try container.encode(description, forKey: .description)
         try container.encode(extra, forKey: .extra)
+        for (index, file) in files.enumerated() {
+            try container.encode(file, forKey: CodingKeys(stringValue: "file_\(index)")!)
+        }
     }
 }

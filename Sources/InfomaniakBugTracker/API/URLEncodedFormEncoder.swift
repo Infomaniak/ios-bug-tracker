@@ -465,6 +465,7 @@ enum URLEncodedFormComponent {
     case string(String)
     case array([URLEncodedFormComponent])
     case object(Object)
+    case file(name: String, mimeType: String, data: Data)
     
     /// Converts self to an `[URLEncodedFormData]` or returns `nil` if not convertible.
     var array: [URLEncodedFormComponent]? {
@@ -754,7 +755,14 @@ extension _URLEncodedFormEncoder.SingleValueContainer: SingleValueEncodingContai
     func encode(_ value: UInt64) throws {
         try encode(value, as: String(value))
     }
-    
+
+    func encode(_ value: ReportFile) throws {
+        try checkCanEncode(value: value)
+        defer { canEncodeNewValue = false }
+
+        context.component.set(to: .file(name: value.name, mimeType: value.uti.preferredMIMEType ?? "", data: value.data), at: codingPath)
+    }
+
     private func encode<T>(_ value: T, as string: String) throws where T: Encodable {
         try checkCanEncode(value: value)
         defer { canEncodeNewValue = false }
@@ -781,6 +789,8 @@ extension _URLEncodedFormEncoder.SingleValueContainer: SingleValueEncodingContai
         case let decimal as Decimal:
             // Decimal's `Encodable` implementation returns an object, not a single value, so override it.
             try encode(value, as: String(describing: decimal))
+        case let file as ReportFile:
+            try encode(file)
         default:
             try attemptToEncode(value)
         }
@@ -916,6 +926,7 @@ final class URLEncodedFormSerializer {
         case let .string(string): return "\(escape(keyEncoding.encode(key)))=\(escape(string))"
         case let .array(array): return serialize(array, forKey: key)
         case let .object(object): return serialize(object, forKey: key)
+        case .file: return ""
         }
     }
     
@@ -952,6 +963,93 @@ final class URLEncodedFormSerializer {
 extension Array where Element == String {
     func joinedWithAmpersands() -> String {
         joined(separator: "&")
+    }
+}
+
+final class MultipartFormDataSerializer {
+    private let alphabetizeKeyValuePairs: Bool
+    private let arrayEncoding: URLEncodedFormEncoder.ArrayEncoding
+    private let keyEncoding: URLEncodedFormEncoder.KeyEncoding
+    private let spaceEncoding: URLEncodedFormEncoder.SpaceEncoding
+    private let allowedCharacters: CharacterSet
+    
+    /// The boundary used for the form data
+    public let boundary = "Boundary-\(UUID().uuidString)"
+    
+    /// The content type to use for a request including the boundary
+    public var contentType: String {
+        return "multipart/form-data; boundary=\(boundary)"
+    }
+    
+    init(alphabetizeKeyValuePairs: Bool,
+         arrayEncoding: URLEncodedFormEncoder.ArrayEncoding,
+         keyEncoding: URLEncodedFormEncoder.KeyEncoding,
+         spaceEncoding: URLEncodedFormEncoder.SpaceEncoding,
+         allowedCharacters: CharacterSet) {
+        self.alphabetizeKeyValuePairs = alphabetizeKeyValuePairs
+        self.arrayEncoding = arrayEncoding
+        self.keyEncoding = keyEncoding
+        self.spaceEncoding = spaceEncoding
+        self.allowedCharacters = allowedCharacters
+    }
+    
+    func serialize(_ object: URLEncodedFormComponent.Object) -> Data {
+        var output = Data()
+        for (key, component) in object {
+            serialize(component, forKey: key, with: &output)
+        }
+        output.append("--\(boundary)--\r\n")
+        
+        return output
+    }
+    
+    func serialize(_ component: URLEncodedFormComponent, forKey key: String, with data: inout Data) {
+        switch component {
+        case let .string(string):
+            data.append("--\(boundary)\r\n")
+            data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+            data.append(string)
+            data.append("\r\n")
+        case let .array(array): serialize(array, forKey: key, with: &data)
+        case let .object(object): serialize(object, forKey: key, with: &data)
+        case let .file(name: fileName, mimeType: mimeType, data: fileData):
+            data.append("--\(boundary)\r\n")
+            data.append("Content-Disposition: form-data; name=\"\(key)\"; filename=\"\(fileName)\"\r\n")
+            data.append("Content-Type: \(mimeType)")
+            data.append("\r\n\r\n")
+            data.append(fileData)
+            data.append("\r\n")
+        }
+    }
+    
+    func serialize(_ object: URLEncodedFormComponent.Object, forKey key: String, with data: inout Data) {
+        object.forEach { subKey, value in
+            let keyPath = "[\(subKey)]"
+            serialize(value, forKey: key + keyPath, with: &data)
+        }
+    }
+    
+    func serialize(_ array: [URLEncodedFormComponent], forKey key: String, with data: inout Data) {
+        array.forEach { component in
+            let keyPath = arrayEncoding.encode(key)
+            serialize(component, forKey: keyPath, with: &data)
+        }
+    }
+    
+    func escape(_ query: String) -> String {
+        var allowedCharactersWithSpace = allowedCharacters
+        allowedCharactersWithSpace.insert(charactersIn: " ")
+        let escapedQuery = query.addingPercentEncoding(withAllowedCharacters: allowedCharactersWithSpace) ?? query
+        let spaceEncodedQuery = spaceEncoding.encode(escapedQuery)
+        
+        return spaceEncodedQuery
+    }
+}
+
+extension Data {
+    mutating func append(_ string: String) {
+        guard let data = string.data(using: .utf8, allowLossyConversion: true) else { return }
+        append(data)
     }
 }
 

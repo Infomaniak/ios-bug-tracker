@@ -36,13 +36,18 @@ class ReportApiFetcher {
 
     private var accessToken: String = ""
 
+    // MARK: - Private methods
+
     private init() {}
 
-    private func makeRequest<T: Decodable>(method: HTTPMethod = .get, path: String, body: Data? = nil) async throws -> T {
+    private func makeRequest<T: Decodable>(method: HTTPMethod = .get, path: String, contentType: String? = nil, body: Data? = nil) async throws -> T {
         guard let url = URL(string: apiEndpoint + path) else {
             throw ReportError.invalidURL
         }
         var request = URLRequest(url: url)
+        if let contentType = contentType {
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        }
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.httpMethod = method.rawValue
         request.httpBody = body
@@ -66,6 +71,24 @@ class ReportApiFetcher {
         }
     }
 
+    private func multipartFormEncode(_ value: Encodable) throws -> (String, Data) {
+        let component: URLEncodedFormComponent = try formEncoder.encode(value)
+
+        guard case let .object(object) = component else {
+            throw URLEncodedFormEncoder.Error.invalidRootObject("\(component)")
+        }
+
+        let serializer = MultipartFormDataSerializer(alphabetizeKeyValuePairs: false,
+                                                     arrayEncoding: .brackets,
+                                                     keyEncoding: .useDefaultKeys,
+                                                     spaceEncoding: .percentEscaped,
+                                                     allowedCharacters: .afURLQueryAllowed)
+
+        return (serializer.contentType, serializer.serialize(object))
+    }
+
+    // MARK: - Public methods
+
     func setAccessToken(_ accessToken: String) {
         self.accessToken = accessToken
     }
@@ -75,6 +98,16 @@ class ReportApiFetcher {
     }
 
     func send(report: Report) async throws -> ReportResult {
-        try await makeRequest(method: .post, path: "/api/components/report", body: formEncoder.encode(report))
+        let contentType: String?
+        let body: Data?
+        if report.files.isEmpty {
+            // URL encoded form
+            contentType = nil
+            body = try formEncoder.encode(report)
+        } else {
+            // Multipart form data
+            (contentType, body) = try multipartFormEncode(report)
+        }
+        return try await makeRequest(method: .post, path: "/api/components/report", contentType: contentType, body: body)
     }
 }

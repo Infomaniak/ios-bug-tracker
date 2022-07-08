@@ -16,12 +16,26 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+import UIKit
 
 public class BugTracker {
     public static let instance = BugTracker()
 
     var info: BugTrackerInfo?
+    var userAgent = "InfomaniakBugTracker/1"
+
+    var extra: [String: String] {
+        return [
+            "project": info?.project ?? "null",
+            "route": info?.route ?? "null",
+            "userAgent": BugTracker.instance.userAgent,
+            "platform": UIDevice.current.systemName,
+            "os_version": UIDevice.current.systemVersion,
+            "device": UIDevice.modelName,
+            "app_version": Bundle.main.releaseVersionNumber,
+            "app_build_number": Bundle.main.buildVersionNumber
+        ]
+    }
 
     private init() {}
 

@@ -32,7 +32,7 @@ class ReportApiFetcher {
         return decoder
     }()
 
-    private let formEncoder = URLEncodedFormEncoder(keyEncoding: .convertToSnakeCase)
+    private let formEncoder = URLEncodedFormEncoder(boolEncoding: .literal)
 
     private var accessToken: String = ""
 

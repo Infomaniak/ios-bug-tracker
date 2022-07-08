@@ -27,22 +27,14 @@ public struct BugTrackerView: View {
     @State private var showingImagePicker = false
     @State private var showingDocumentPicker = false
 
-    private let info = BugTracker.instance.info
-
     public init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
-        let extra: ReportExtra
-        if let info = info {
-            extra = ReportExtra(project: info.project, route: info.route ?? "null", userAgent: "")
-        } else {
-            extra = ReportExtra(project: "", route: "", userAgent: "")
-        }
         _report = State(initialValue: Report(bucketIdentifier: "",
                                              type: .bugs,
                                              priority: .normal,
                                              subject: "",
                                              description: "",
-                                             extra: extra,
+                                             extra: BugTracker.instance.extra,
                                              files: []))
     }
 
@@ -117,10 +109,10 @@ public struct BugTrackerView: View {
             DocumentPicker(completion: add(file:))
         }
         .task {
-            guard let info = info else { return }
+            guard let info = BugTracker.instance.info else { return }
             do {
                 let buckets = try await ReportApiFetcher.instance.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
-                projects = buckets.list
+                projects = buckets.list.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
                 guard let currentProject = buckets.list.first(where: { $0.title.caseInsensitiveCompare(buckets.current?.title ?? "") == .orderedSame }) else { return }
                 report.bucketIdentifier = currentProject.identifier
                 if let firstType = currentProject.allowedReportTypes.first {

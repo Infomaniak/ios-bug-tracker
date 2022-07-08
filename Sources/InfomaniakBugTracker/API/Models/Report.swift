@@ -24,11 +24,11 @@ struct Report: Encodable {
     var priority: ReportPriority
     var subject: String
     var description: String
-    var extra: ReportExtra
+    var extra: [String: String]
     var files: [ReportFile]
 
     private enum CodingKeys: String, CodingKey {
-        case bucketIdentifier, type, priority, subject, description, extra
+        case bucketIdentifier = "bucket_identifier", type, priority, subject, description, extra
     }
 
     func encode(to encoder: Encoder) throws {

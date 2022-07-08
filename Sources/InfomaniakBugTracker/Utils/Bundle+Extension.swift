@@ -18,14 +18,12 @@
 
 import Foundation
 
-struct ReportExtra: Encodable {
-    var project: String
-    var route: String
-    var userAgent: String
-    // userId
-    // groupId
-    // userMail
-    // userDisplayName
-    // pageLink
-    // console
+extension Bundle {
+    var releaseVersionNumber: String {
+        return object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Not Found"
+    }
+
+    var buildVersionNumber: String {
+        return object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Not Found"
+    }
 }

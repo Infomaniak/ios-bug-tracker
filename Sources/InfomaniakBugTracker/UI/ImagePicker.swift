@@ -54,7 +54,9 @@ struct ImagePicker: UIViewControllerRepresentable {
                         print("[BUG TRACKER] Error while accessing image: \(error ?? ReportError.cannotConvertImageToData)")
                         return
                     }
-                    self.parent.completion(ReportFile(name: itemProvider.suggestedName ?? "No name", data: data, uti: .jpeg))
+                    DispatchQueue.main.async {
+                        self.parent.completion(ReportFile(name: itemProvider.suggestedName ?? "No name", data: data, uti: .jpeg))
+                    }
                 }
             }
         }

@@ -44,12 +44,16 @@ struct DocumentPicker: UIViewControllerRepresentable {
         
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             for url in urls {
-                do {
-                    let data = try Data(contentsOf: url)
-                    let typeIdentifier = (try? url.resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier ?? ""
-                    parent.completion(ReportFile(name: url.lastPathComponent, data: data, uti: UTType(typeIdentifier) ?? .data))
-                } catch {
-                    print("[BUG TRACKER] Error while accessing file: \(error)")
+                DispatchQueue.global().async {
+                    do {
+                        let data = try Data(contentsOf: url)
+                        let typeIdentifier = (try? url.resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier ?? ""
+                        DispatchQueue.main.async {
+                            self.parent.completion(ReportFile(name: url.lastPathComponent, data: data, uti: UTType(typeIdentifier) ?? .data))
+                        }
+                    } catch {
+                        print("[BUG TRACKER] Error while accessing file: \(error)")
+                    }
                 }
             }
         }

@@ -18,6 +18,7 @@
 
 import SwiftUI
 
+/// Main Bug Tracker view.
 public struct BugTrackerView: View {
     @Binding var isPresented: Bool
 

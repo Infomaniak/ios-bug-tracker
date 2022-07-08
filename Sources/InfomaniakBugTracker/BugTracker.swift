@@ -18,12 +18,15 @@
 
 import UIKit
 
+/// Bug Tracker class containing information needed by the library.
 public class BugTracker {
+    /// Shared Bug Tracker class instance.
     public static let instance = BugTracker()
 
     var info: BugTrackerInfo?
     var userAgent = "InfomaniakBugTracker/1"
 
+    /// Extra info dictionary sent along with every bug report.
     var extra: [String: String] {
         return [
             "project": info?.project ?? "null",
@@ -38,7 +41,9 @@ public class BugTracker {
     }
 
     private init() {}
-
+    
+    /// Configure the instance by setting the info object.
+    /// - Parameter info: New info object
     public func configure(with info: BugTrackerInfo) {
         self.info = info
         ReportApiFetcher.instance.setAccessToken(info.accessToken)

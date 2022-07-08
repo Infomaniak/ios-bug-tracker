@@ -28,6 +28,7 @@ public struct BugTrackerView: View {
     @State private var showingDocumentPicker = false
     @State private var showingSuccessMessage = false
     @State private var showingErrorMessage = false
+    @State private var isLoading = false
     @State private var result: ReportResult?
     @State private var error: ReportError?
 
@@ -40,6 +41,7 @@ public struct BugTrackerView: View {
                                              description: "",
                                              extra: BugTracker.instance.extra,
                                              files: []))
+        UIScrollView.appearance().keyboardDismissMode = .onDrag
     }
 
     public var body: some View {
@@ -102,7 +104,11 @@ public struct BugTrackerView: View {
                     Button("Annuler", action: cancel)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Soumettre", action: submit)
+                    if isLoading {
+                        ProgressView()
+                    } else {
+                        Button("Soumettre", action: submit)
+                    }
                 }
             }
         }
@@ -164,6 +170,7 @@ public struct BugTrackerView: View {
     }
 
     private func submit() {
+        isLoading = true
         Task {
             do {
                 result = try await ReportApiFetcher.instance.send(report: report)
@@ -175,6 +182,7 @@ public struct BugTrackerView: View {
             } catch {
                 print("[BUG TRACKER] Error while sending report: \(error)")
             }
+            isLoading = false
         }
     }
 }

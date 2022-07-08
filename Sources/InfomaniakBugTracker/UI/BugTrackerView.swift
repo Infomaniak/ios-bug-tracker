@@ -71,8 +71,16 @@ public struct BugTrackerView: View {
 
                     TextField(Translation.fieldSubject, text: $report.subject)
 
-                    TextEditor(text: $report.description)
-                        .frame(height: 200)
+                    ZStack(alignment: .topLeading) {
+                        TextEditor(text: $report.description)
+                            .frame(height: 200)
+                            .padding(.horizontal, -5)
+                        if report.description.isEmpty {
+                            Text(Translation.fieldDescription)
+                                .foregroundColor(Color(uiColor: .tertiaryLabel))
+                                .padding(.top, 8)
+                        }
+                    }
                 }
 
                 Section(header: Text("sectionFilesHeader", bundle: .module), footer: Text("sectionsFilesFooter", bundle: .module)) {

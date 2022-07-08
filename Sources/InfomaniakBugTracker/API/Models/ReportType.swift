@@ -25,9 +25,9 @@ enum ReportType: String, CaseIterable, Encodable {
     var title: String {
         switch self {
         case .bugs:
-            return "Bug"
+            return Translation.typeBug
         case .features:
-            return "Amélioration"
+            return Translation.typeFeature
         }
     }
 }

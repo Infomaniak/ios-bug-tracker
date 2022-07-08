@@ -27,13 +27,13 @@ enum ReportError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "Invalid URL"
-        case .httpError(let status):
-            return "HTTP error \(status)"
+            return Translation.errorInvalidURL
+        case .httpError(let statusCode):
+            return Translation.errorHTTP(code: statusCode)
         case .apiError:
-            return "API error"
+            return Translation.errorAPI
         case .cannotConvertImageToData:
-            return "Cannot convert image to data"
+            return Translation.errorCannotConvertImageToData
         }
     }
 
@@ -42,7 +42,7 @@ enum ReportError: LocalizedError {
         case .apiError(let apiError):
             return apiError.description
         default:
-            return "An error occured, please try again."
+            return Translation.errorGenericDetail
         }
     }
 }

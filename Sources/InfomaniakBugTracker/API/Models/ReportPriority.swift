@@ -28,15 +28,15 @@ enum ReportPriority: Int, CaseIterable, Encodable {
     var title: String {
         switch self {
         case .low:
-            return "Bas"
+            return Translation.priorityLow
         case .normal:
-            return "Normal"
+            return Translation.priorityNormal
         case .high:
-            return "Élevé"
+            return Translation.priorityHigh
         case .urgent:
-            return "Urgent"
+            return Translation.priorityUrgent
         case .immediate:
-            return "Immédiat"
+            return Translation.priorityImmediate
         }
     }
 }

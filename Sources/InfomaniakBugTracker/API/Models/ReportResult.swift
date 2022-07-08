@@ -21,4 +21,8 @@ import Foundation
 struct ReportResult: Decodable {
     let state: String
     let url: String
+
+    var localizedState: String {
+        return NSLocalizedString(state, bundle: .module, comment: "")
+    }
 }

@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "InfomaniakBugTracker",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v15),
     ],

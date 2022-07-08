@@ -1,0 +1,47 @@
+/*
+ Infomaniak Bug Tracker - iOS
+ Copyright (C) 2021 Infomaniak Network SA
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+"titleReportBug" = "Report a bug";
+"fieldProject" = "Project";
+"fieldType" = "Type";
+"fieldPriority" = "Priority";
+"fieldSubject" = "Subject";
+"fieldDescription" = "Description";
+"sectionFilesHeader" = "Files";
+"sectionsFilesFooter" = "You can add files (32 MB maximum) to help understand your bug better.";
+"buttonAddFile" = "Add a file";
+"buttonAddFromPhotoLibrary" = "From photo library";
+"buttonAddFromFiles" = "From files";
+"buttonCancel" = "Cancel";
+"buttonSubmit" = "Submit";
+"alertTitleSuccess" = "Success";
+"buttonOpenIssue" = "Open issue";
+"buttonOK" = "OK";
+"Issue successfully created" = "Issue successfully created";
+"errorInvalidURL" = "Invalid URL";
+"errorHTTP" = "HTTP error (%d)";
+"errorAPI" = "API error";
+"errorCannotConvertImageToData" = "Cannot convert image to data";
+"errorGenericDetail" = "An error occured, please try again.";
+"priorityLow" = "Low";
+"priorityNormal" = "Normal";
+"priorityHigh" = "High";
+"priorityUrgent" = "Urgent";
+"priorityImmediate" = "Immediate";
+"typeBug" = "Bug";
+"typeFeature" = "Improvement";

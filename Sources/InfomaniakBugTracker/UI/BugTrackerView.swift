@@ -48,34 +48,34 @@ public struct BugTrackerView: View {
         NavigationView {
             Form {
                 Section {
-                    Picker("Projet", selection: $report.bucketIdentifier) {
+                    Picker(Translation.fieldProject, selection: $report.bucketIdentifier) {
                         ForEach(projects, id: \.identifier) { project in
                             Text(project.title)
                                 .tag(project.identifier)
                         }
                     }
 
-                    Picker("Type", selection: $report.type) {
+                    Picker(Translation.fieldType, selection: $report.type) {
                         ForEach(reportTypes, id: \.rawValue) { type in
                             Text(type.title)
                                 .tag(type)
                         }
                     }
 
-                    Picker("Priorité", selection: $report.priority) {
+                    Picker(Translation.fieldPriority, selection: $report.priority) {
                         ForEach(ReportPriority.allCases, id: \.rawValue) { priority in
                             Text(priority.title)
                                 .tag(priority)
                         }
                     }
 
-                    TextField("Sujet", text: $report.subject)
+                    TextField(Translation.fieldSubject, text: $report.subject)
 
                     TextEditor(text: $report.description)
                         .frame(height: 200)
                 }
 
-                Section(header: Text("Fichiers"), footer: Text("Vous pouvez ajouter des fichiers (32 MB maximum) pour aider à mieux comprendre votre bug.")) {
+                Section(header: Text("sectionFilesHeader", bundle: .module), footer: Text("sectionsFilesFooter", bundle: .module)) {
                     ForEach(report.files, id: \.name) { file in
                         FileAttachmentCell(file: file) {
                             remove(file: file)
@@ -86,28 +86,28 @@ public struct BugTrackerView: View {
                         Button {
                             showingImagePicker = true
                         } label: {
-                            Label("Depuis la photothèque", systemImage: "photo.on.rectangle")
+                            Label(Translation.buttonAddFromPhotoLibrary, systemImage: "photo.on.rectangle")
                         }
                         Button {
                             showingDocumentPicker = true
                         } label: {
-                            Label("Depuis Fichiers", systemImage: "folder")
+                            Label(Translation.buttonAddFromFiles, systemImage: "folder")
                         }
                     } label: {
-                        Label("Ajouter un fichier", systemImage: "paperclip")
+                        Label(Translation.buttonAddFile, systemImage: "paperclip")
                     }
                 }
             }
-            .navigationTitle("Reporter un bug")
+            .navigationTitle(Translation.titleReportBug)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Annuler", action: cancel)
+                    Button(Translation.buttonCancel, action: cancel)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     if isLoading {
                         ProgressView()
                     } else {
-                        Button("Soumettre", action: submit)
+                        Button(Translation.buttonSubmit, action: submit)
                     }
                 }
             }
@@ -118,13 +118,13 @@ public struct BugTrackerView: View {
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker(completion: add(file:))
         }
-        .alert(result?.state ?? "Success", isPresented: $showingSuccessMessage, presenting: result, actions: { result in
-            Button("Open issue") {
+        .alert(result?.localizedState ?? Translation.alertTitleSuccess, isPresented: $showingSuccessMessage, presenting: result, actions: { result in
+            Button(Translation.buttonOpenIssue) {
                 isPresented = false
                 guard let url = URL(string: result.url) else { return }
                 UIApplication.shared.open(url)
             }
-            Button("OK", role: .cancel) {
+            Button(Translation.buttonOK, role: .cancel) {
                 isPresented = false
             }
         }, message: { result in

@@ -52,4 +52,8 @@ struct MyView: View {
 
 ### Present the view using UIKit
 
-To present the bug tracker component using UIKit, use a `UIHostingController`. In the future, we might want to add a `UIViewController` directly in this library.
+To present the bug tracker component using UIKit, simply present a `BugTrackerViewController` instance.
+
+```swift
+myViewController.present(BugTrackerViewController(), animated: true)
+```

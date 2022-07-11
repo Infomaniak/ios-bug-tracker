@@ -27,10 +27,15 @@ class BugTrackerViewModel: ObservableObject {
 /// Main Bug Tracker view controller.
 public class BugTrackerViewController: UIViewController {
     @ObservedObject var viewModel = BugTrackerViewModel()
+    var files: [ReportFile]
 
     private var cancellable: AnyCancellable?
 
-    public init() {
+    /// Creates a Bug Tracker view controller.
+    /// - Parameters:
+    ///   - files: Array of files to add to the report by default.
+    public init(files: [ReportFile] = []) {
+        self.files = files
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -41,7 +46,7 @@ public class BugTrackerViewController: UIViewController {
 
     override public func viewDidLoad() {
         // Create view
-        let bugTrackerView = BugTrackerView(isPresented: $viewModel.isPresented)
+        let bugTrackerView = BugTrackerView(isPresented: $viewModel.isPresented, files: files)
         let hostingController = UIHostingController(rootView: bugTrackerView)
         addChild(hostingController)
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false

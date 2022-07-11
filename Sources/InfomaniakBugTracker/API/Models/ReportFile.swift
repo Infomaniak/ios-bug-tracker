@@ -19,10 +19,23 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ReportFile: Encodable, Equatable {
+public struct ReportFile: Encodable, Equatable {
     let name: String
     let data: Data
     let uti: UTType
+
+    public init(name: String, data: Data, uti: UTType) {
+        self.name = name
+        self.data = data
+        self.uti = uti
+    }
+
+    public static func from(image: UIImage, named name: String) throws -> ReportFile {
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            throw ReportError.cannotConvertImageToData
+        }
+        return ReportFile(name: name, data: data, uti: .jpeg)
+    }
 
     var systemIconName: String {
         if uti.conforms(to: .image) {

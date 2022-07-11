@@ -50,12 +50,21 @@ struct ImagePicker: UIViewControllerRepresentable {
 
             for itemProvider in itemProviders where itemProvider.canLoadObject(ofClass: UIImage.self) {
                 itemProvider.loadObject(ofClass: UIImage.self) { image, error in
-                    guard let data = (image as? UIImage)?.jpegData(compressionQuality: 0.8) else {
-                        print("[BUG TRACKER] Error while accessing image: \(error ?? ReportError.cannotConvertImageToData)")
+                    guard let image = image as? UIImage else {
+                        if let error = error {
+                            print("[BUG TRACKER] Error while accessing image: \(error)")
+                        } else {
+                            print("[BUG TRACKER] Image is nil")
+                        }
                         return
                     }
-                    DispatchQueue.main.async {
-                        self.parent.completion(ReportFile(name: itemProvider.suggestedName ?? "No name", data: data, uti: .jpeg))
+                    do {
+                        let file = try ReportFile.from(image: image, named: itemProvider.suggestedName ?? "No name")
+                        DispatchQueue.main.async {
+                            self.parent.completion(file)
+                        }
+                    } catch {
+                        print("[BUG TRACKER] Error while accessing image: \(error)")
                     }
                 }
             }

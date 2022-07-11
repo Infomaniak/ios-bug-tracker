@@ -19,6 +19,15 @@
 import UIKit
 
 extension UIWindow {
+    func makeSnapshot() -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, UIScreen.main.scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        layer.render(in: context)
+        let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return screenshot
+    }
+
     var visibleViewController: UIViewController? {
         if let rootViewController = rootViewController {
             return getVisibleViewController(from: rootViewController)

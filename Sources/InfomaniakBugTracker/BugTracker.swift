@@ -69,11 +69,17 @@ public class BugTracker {
                 return
             }
 
+            let snapshot = keyWindow?.makeSnapshot()
+
             // Present alert asking for bug report
             let alertController = UIAlertController(title: Translation.alertReportScreenshotTitle, message: nil, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: Translation.buttonYes, style: .default) { _ in
                 willPresent?()
-                visibleViewController.present(BugTrackerViewController(), animated: true)
+                var files = [ReportFile]()
+                if let snapshot = snapshot, let file = try? ReportFile.from(image: snapshot, named: "screenshot_automatic") {
+                    files.append(file)
+                }
+                visibleViewController.present(BugTrackerViewController(files: files), animated: true)
             })
             alertController.addAction(UIAlertAction(title: Translation.buttonNo, style: .cancel))
             visibleViewController.present(alertController, animated: true)

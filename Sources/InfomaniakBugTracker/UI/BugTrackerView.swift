@@ -33,7 +33,11 @@ public struct BugTrackerView: View {
     @State private var result: ReportResult?
     @State private var error: ReportError?
 
-    public init(isPresented: Binding<Bool>) {
+    /// Creates a Bug Tracker view.
+    /// - Parameters:
+    ///   - isPresented: Binding to the boolean presenting the view.
+    ///   - files: Array of files to add to the report by default.
+    public init(isPresented: Binding<Bool>, files: [ReportFile] = []) {
         _isPresented = isPresented
         _report = State(initialValue: Report(bucketIdentifier: "",
                                              type: .bugs,
@@ -41,7 +45,7 @@ public struct BugTrackerView: View {
                                              subject: "",
                                              description: "",
                                              extra: BugTracker.instance.extra,
-                                             files: []))
+                                             files: files))
         UIScrollView.appearance().keyboardDismissMode = .onDrag
     }
 

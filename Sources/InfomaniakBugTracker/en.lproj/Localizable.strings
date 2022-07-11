@@ -45,3 +45,6 @@
 "priorityImmediate" = "Immediate";
 "typeBug" = "Bug";
 "typeFeature" = "Improvement";
+"alertReportScreenshotTitle" = "Do you want to send this capture with the bug tracker?";
+"buttonYes" = "Yes";
+"buttonNo" = "No";

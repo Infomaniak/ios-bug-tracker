@@ -16,6 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import SwiftUI
 import UIKit
 
 /// Bug Tracker class containing information needed by the library.
@@ -24,6 +25,7 @@ public class BugTracker {
     public static let instance = BugTracker()
 
     var info: BugTrackerInfo?
+    var screenshotObserver: NSObjectProtocol?
     var userAgent = "InfomaniakBugTracker/1"
 
     /// Extra info dictionary sent along with every bug report.
@@ -41,11 +43,45 @@ public class BugTracker {
     }
 
     private init() {}
-    
+
     /// Configure the instance by setting the info object.
     /// - Parameter info: New info object
     public func configure(with info: BugTrackerInfo) {
         self.info = info
         ReportApiFetcher.instance.setAccessToken(info.accessToken)
+    }
+
+    /// Starts observing when the user takes a screenshot to present the bug tracker view automatically.
+    public func activateOnScreenshot(willPresent: (() -> Void)? = nil) {
+        screenshotObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.userDidTakeScreenshotNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            let keyWindow = UIApplication.shared.connectedScenes
+                .filter { $0.activationState == .foregroundActive }
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap(\.windows)
+                .first(where: \.isKeyWindow)
+
+            guard let visibleViewController = keyWindow?.visibleViewController else {
+                print("[BUG TRACKER] Screenshot detected but no view controller to present from found")
+                return
+            }
+
+            // Present alert asking for bug report
+            let alertController = UIAlertController(title: Translation.alertReportScreenshotTitle, message: nil, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: Translation.buttonYes, style: .default) { _ in
+                willPresent?()
+                visibleViewController.present(BugTrackerViewController(), animated: true)
+            })
+            alertController.addAction(UIAlertAction(title: Translation.buttonNo, style: .cancel))
+            visibleViewController.present(alertController, animated: true)
+        }
+    }
+
+    /// Stops observing when the user takes a screenshot.
+    public func stopActivatingOnScreenshot() {
+        NotificationCenter.default.removeObserver(screenshotObserver as Any)
     }
 }

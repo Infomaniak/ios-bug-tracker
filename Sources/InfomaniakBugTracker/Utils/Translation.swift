@@ -52,6 +52,9 @@ struct Translation {
     static let priorityImmediate = localizedString(key: "priorityImmediate")
     static let typeBug = localizedString(key: "typeBug")
     static let typeFeature = localizedString(key: "typeFeature")
+    static let alertReportScreenshotTitle = localizedString(key: "alertReportScreenshotTitle")
+    static let buttonYes = localizedString(key: "buttonYes")
+    static let buttonNo = localizedString(key: "buttonNo")
 
     private static func localizedString(key: String, _ arguments: CVarArg...) -> String {
         return String(format: NSLocalizedString(key, bundle: .module, comment: ""), arguments: arguments)

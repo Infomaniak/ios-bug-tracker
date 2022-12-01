@@ -98,15 +98,22 @@ class ReportApiFetcher {
     }
 
     func send(report: Report) async throws -> ReportResult {
+        let subjectPrefix = "[iOS]: "
         let contentType: String?
         let body: Data?
+
+        var reportCopy = report
+        if !reportCopy.subject.hasPrefix(subjectPrefix) {
+            reportCopy.subject = "\(subjectPrefix)\(reportCopy.subject)"
+        }
+
         if report.files.isEmpty {
             // URL encoded form
             contentType = nil
-            body = try formEncoder.encode(report)
+            body = try formEncoder.encode(reportCopy)
         } else {
             // Multipart form data
-            (contentType, body) = try multipartFormEncode(report)
+            (contentType, body) = try multipartFormEncode(reportCopy)
         }
         return try await makeRequest(method: .post, path: "/api/components/report", contentType: contentType, body: body)
     }

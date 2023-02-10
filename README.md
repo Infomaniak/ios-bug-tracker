@@ -11,15 +11,14 @@ Bug tracker component in Swift to add in iOS apps (internal use).
 
 ### Configuration
 
-Before presenting the bug tracker, you need to configure it like this:
+Before presenting the bug tracker, you need to configure it:
 
 ```swift
-BugTracker.instance.configure(with: BugTrackerInfo(
-    accessToken: "<access-token>",
+BugTrackerInfo(
     route: "route", // route to find the project bucket (optional)
     project: "app-mobile-mail", // project name
     serviceId: 0 // service ID to find the project bucket (optional) 
-))
+)
 ```
 
 ### Checking that the user is staff

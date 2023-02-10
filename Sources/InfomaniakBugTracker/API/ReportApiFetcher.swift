@@ -16,88 +16,44 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Alamofire
 import Foundation
+import InfomaniakCore
 
-class ReportApiFetcher {
-    enum HTTPMethod: String {
-        case get = "GET", post = "POST"
+extension ApiEnvironment {
+    var welcomeHost: String {
+        return "welcome.\(host)"
+    }
+}
+
+extension Endpoint {
+    static var report: Endpoint {
+        return Endpoint(hostKeypath: \.welcomeHost, path: "/api/components/report")
     }
 
-    static let instance = ReportApiFetcher()
+    static func buckets(route: String? = nil, project: String, serviceId: Int? = nil) -> Endpoint {
+        return .report.appending(path: "",
+                                 queryItems: [URLQueryItem(name: "route", value: "\(route ?? "null")"),
+                                              URLQueryItem(name: "project", value: "\(project)"),
+                                              URLQueryItem(name: "service", value: "\(serviceId ?? 0)")])
+    }
+}
 
-    private let apiEndpoint = "https://welcome.infomaniak.com"
-    private lazy var jsonDecoder: JSONDecoder = {
+extension ApiFetcher {
+    var reportDecoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
-    }()
-
-    private let formEncoder = URLEncodedFormEncoder(boolEncoding: .literal)
-
-    private var accessToken: String = ""
-
-    // MARK: - Private methods
-
-    private init() {}
-
-    private func makeRequest<T: Decodable>(method: HTTPMethod = .get, path: String, contentType: String? = nil, body: Data? = nil) async throws -> T {
-        guard let url = URL(string: apiEndpoint + path) else {
-            throw ReportError.invalidURL
-        }
-        var request = URLRequest(url: url)
-        if let contentType = contentType {
-            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
-        }
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.httpMethod = method.rawValue
-        request.httpBody = body
-
-        if method != .get {
-            // XSRF cookie needs to be passed in request header
-            let cookies = HTTPCookieStorage.shared.cookies(for: url)
-            if let xsrfCookie = cookies?.first(where: { $0.name == "SHOP-XSRF-TOKEN" }) {
-                request.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
-            }
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        let json = try jsonDecoder.decode(ApiResponse<T>.self, from: data)
-        if let data = json.data {
-            return data
-        } else if let error = json.error {
-            throw ReportError.apiError(error)
-        } else {
-            throw ReportError.httpError(status: (response as? HTTPURLResponse)?.statusCode ?? -1)
-        }
-    }
-
-    private func multipartFormEncode(_ value: Encodable) throws -> (String, Data) {
-        let component: URLEncodedFormComponent = try formEncoder.encode(value)
-
-        guard case let .object(object) = component else {
-            throw URLEncodedFormEncoder.Error.invalidRootObject("\(component)")
-        }
-
-        let serializer = MultipartFormDataSerializer(alphabetizeKeyValuePairs: false,
-                                                     arrayEncoding: .brackets,
-                                                     keyEncoding: .useDefaultKeys,
-                                                     spaceEncoding: .percentEscaped,
-                                                     allowedCharacters: .afURLQueryAllowed)
-
-        return (serializer.contentType, serializer.serialize(object))
-    }
-
-    // MARK: - Public methods
-
-    func setAccessToken(_ accessToken: String) {
-        self.accessToken = accessToken
     }
 
     func buckets(route: String? = nil, project: String, serviceId: Int? = nil) async throws -> Buckets {
-        try await makeRequest(path: "/api/components/report?route=\(route ?? "null")&project=\(project)&service=\(serviceId ?? 0)")
+        try await perform(request: authenticatedRequest(.buckets(route: route, project: project, serviceId: serviceId)),
+                          decoder: reportDecoder).data
     }
 
     func send(report: Report) async throws -> ReportResult {
+        let formEncoder = URLEncodedFormEncoder(boolEncoding: .literal)
         let subjectPrefix = "[iOS]: "
         let contentType: String?
         let body: Data?
@@ -113,8 +69,30 @@ class ReportApiFetcher {
             body = try formEncoder.encode(reportCopy)
         } else {
             // Multipart form data
-            (contentType, body) = try multipartFormEncode(reportCopy)
+            (contentType, body) = try multipartFormEncode(reportCopy, formEncoder: formEncoder)
         }
-        return try await makeRequest(method: .post, path: "/api/components/report", contentType: contentType, body: body)
+        
+        var request = try URLRequest(url: Endpoint.report.url, method: .post)
+        if let contentType = contentType {
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        }
+        guard let body else {throw ReportError.invalidURL }
+        return try await perform(request: authenticatedSession.upload(body, with: request), decoder: reportDecoder).data
+    }
+
+    private func multipartFormEncode(_ value: Encodable, formEncoder: URLEncodedFormEncoder) throws -> (String, Data) {
+        let component: URLEncodedFormComponent = try formEncoder.encode(value)
+
+        guard case let .object(object) = component else {
+            throw URLEncodedFormEncoder.Error.invalidRootObject("\(component)")
+        }
+
+        let serializer = MultipartFormDataSerializer(alphabetizeKeyValuePairs: false,
+                                                     arrayEncoding: .brackets,
+                                                     keyEncoding: .useDefaultKeys,
+                                                     spaceEncoding: .percentEscaped,
+                                                     allowedCharacters: .afURLQueryAllowed)
+
+        return (serializer.contentType, serializer.serialize(object))
     }
 }

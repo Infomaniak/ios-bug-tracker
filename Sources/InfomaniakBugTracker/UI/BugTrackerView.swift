@@ -151,7 +151,7 @@ public struct BugTrackerView: View {
         .task {
             guard let info = BugTracker.instance.info else { return }
             do {
-                let buckets = try await ReportApiFetcher.instance.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
+                let buckets = try await BugTracker.instance.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
                 projects = buckets.list.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
                 guard let currentProject = buckets.list.first(where: { $0.title.caseInsensitiveCompare(buckets.current?.title ?? "") == .orderedSame }) else { return }
                 report.bucketIdentifier = currentProject.identifier
@@ -186,7 +186,7 @@ public struct BugTrackerView: View {
         isLoading = true
         Task {
             do {
-                result = try await ReportApiFetcher.instance.send(report: report)
+                result = try await BugTracker.instance.send(report: report)
                 showingSuccessMessage = true
             } catch let error as ReportError {
                 print("[BUG TRACKER] Error while sending report: \(error)")

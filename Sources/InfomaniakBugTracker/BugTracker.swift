@@ -16,6 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import InfomaniakCore
 import SwiftUI
 import UIKit
 
@@ -25,6 +26,7 @@ public class BugTracker {
     public static let instance = BugTracker()
 
     var info: BugTrackerInfo?
+    var apiFetcher: ApiFetcher?
     var screenshotObserver: NSObjectProtocol?
     var userAgent = "InfomaniakBugTracker/1"
 
@@ -46,9 +48,10 @@ public class BugTracker {
 
     /// Configure the instance by setting the info object.
     /// - Parameter info: New info object
-    public func configure(with info: BugTrackerInfo) {
+    /// - Parameter apiFetcher: ApiFetcher for the current user
+    public func configure(with info: BugTrackerInfo, apiFetcher: ApiFetcher) {
         self.info = info
-        ReportApiFetcher.instance.setAccessToken(info.accessToken)
+        self.apiFetcher = apiFetcher
     }
 
     /// Starts observing when the user takes a screenshot to present the bug tracker view automatically.
@@ -89,5 +92,15 @@ public class BugTracker {
     /// Stops observing when the user takes a screenshot.
     public func stopActivatingOnScreenshot() {
         NotificationCenter.default.removeObserver(screenshotObserver as Any)
+    }
+
+    func buckets(route: String? = nil, project: String, serviceId: Int? = nil) async throws -> Buckets {
+        guard let apiFetcher else { fatalError("BugTracker must be configured with an ApiFetcher") }
+        return try await apiFetcher.buckets(route: route, project: project, serviceId: serviceId)
+    }
+
+    func send(report: Report) async throws -> ReportResult {
+        guard let apiFetcher else { fatalError("BugTracker must be configured with an ApiFetcher") }
+        return try await apiFetcher.send(report: report)
     }
 }

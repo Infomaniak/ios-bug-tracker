@@ -17,25 +17,22 @@
  */
 
 import Foundation
+import InfomaniakCore
 
 public struct BugTrackerInfo {
-    /// User access token to make API calls.
-    let accessToken: String
     /// Route of the project bucket.
     let route: String?
     /// Project name.
     let project: String
     /// Service ID of the project bucket.
     let serviceId: Int?
-    
+
     /// Creates an object with the information needed by the Bug Tracker.
     /// - Parameters:
-    ///   - accessToken: User access token to make API calls.
     ///   - route: Route of the project bucket.
     ///   - project: Project name.
     ///   - serviceId: Service ID of the project bucket.
-    public init(accessToken: String, route: String? = nil, project: String, serviceId: Int? = nil) {
-        self.accessToken = accessToken
+    public init(route: String? = nil, project: String, serviceId: Int? = nil) {
         self.route = route
         self.project = project
         self.serviceId = serviceId

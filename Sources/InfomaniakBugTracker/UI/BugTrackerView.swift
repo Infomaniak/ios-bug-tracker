@@ -29,7 +29,7 @@ public struct BugTrackerView: View {
     @State private var projects: [Project] = []
     @State private var reportTypes: [ReportType] = ReportType.allCases
     @State private var report: Report
-    @State private var isAppOutdated = true
+    @State private var isAppOutdated = false
     @State private var showingImagePicker = false
     @State private var showingDocumentPicker = false
     @State private var showingSuccessMessage = false

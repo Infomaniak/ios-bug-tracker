@@ -101,6 +101,12 @@ public class BugTracker {
 
     func send(report: Report) async throws -> ReportResult {
         guard let apiFetcher else { fatalError("BugTracker must be configured with an ApiFetcher") }
+        let subjectPrefix = "[iOS]: "
+        var reportCopy = report
+        if !reportCopy.subject.hasPrefix(subjectPrefix) {
+            reportCopy.subject = "\(subjectPrefix)\(reportCopy.subject)"
+        }
+
         return try await apiFetcher.send(report: report)
     }
 

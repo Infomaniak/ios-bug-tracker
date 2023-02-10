@@ -74,22 +74,16 @@ extension ApiFetcher {
 
     func send(report: Report) async throws -> ReportResult {
         let formEncoder = URLEncodedFormEncoder(boolEncoding: .literal)
-        let subjectPrefix = "[iOS]: "
         let contentType: String?
         let body: Data?
-
-        var reportCopy = report
-        if !reportCopy.subject.hasPrefix(subjectPrefix) {
-            reportCopy.subject = "\(subjectPrefix)\(reportCopy.subject)"
-        }
 
         if report.files.isEmpty {
             // URL encoded form
             contentType = nil
-            body = try formEncoder.encode(reportCopy)
+            body = try formEncoder.encode(report)
         } else {
             // Multipart form data
-            (contentType, body) = try multipartFormEncode(reportCopy, formEncoder: formEncoder)
+            (contentType, body) = try multipartFormEncode(report, formEncoder: formEncoder)
         }
 
         var request = try URLRequest(url: Endpoint.report.url, method: .post)

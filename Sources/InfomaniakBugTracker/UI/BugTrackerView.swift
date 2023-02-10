@@ -16,6 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import CocoaLumberjackSwift
 import InfomaniakDI
 import SwiftUI
 
@@ -165,7 +166,7 @@ public struct BugTrackerView: View {
                 }
                 reportTypes = currentProject.allowedReportTypes
             } catch {
-                print("[BUG TRACKER] Error while fetching buckets: \(error)")
+                DDLogError("[BUG TRACKER] Error while fetching buckets: \(error)")
             }
         }
     }
@@ -194,11 +195,11 @@ public struct BugTrackerView: View {
                 result = try await bugTracker.send(report: report)
                 showingSuccessMessage = true
             } catch let error as ReportError {
-                print("[BUG TRACKER] Error while sending report: \(error)")
+                DDLogError("[BUG TRACKER] Error while sending report: \(error)")
                 self.error = error
                 showingErrorMessage = true
             } catch {
-                print("[BUG TRACKER] Error while sending report: \(error)")
+                DDLogError("[BUG TRACKER] Error while sending report: \(error)")
             }
             isLoading = false
         }

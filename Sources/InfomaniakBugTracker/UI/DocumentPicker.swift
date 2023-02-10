@@ -16,6 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import CocoaLumberjackSwift
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -52,7 +53,7 @@ struct DocumentPicker: UIViewControllerRepresentable {
                             self.parent.completion(ReportFile(name: url.lastPathComponent, data: data, uti: UTType(typeIdentifier) ?? .data))
                         }
                     } catch {
-                        print("[BUG TRACKER] Error while accessing file: \(error)")
+                        DDLogError("[BUG TRACKER] Error while accessing file: \(error)")
                     }
                 }
             }

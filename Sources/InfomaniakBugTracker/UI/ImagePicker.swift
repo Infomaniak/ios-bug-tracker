@@ -16,6 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import CocoaLumberjackSwift
 import PhotosUI
 import SwiftUI
 
@@ -52,9 +53,9 @@ struct ImagePicker: UIViewControllerRepresentable {
                 itemProvider.loadObject(ofClass: UIImage.self) { image, error in
                     guard let image = image as? UIImage else {
                         if let error = error {
-                            print("[BUG TRACKER] Error while accessing image: \(error)")
+                            DDLogError("[BUG TRACKER] Error while accessing image: \(error)")
                         } else {
-                            print("[BUG TRACKER] Image is nil")
+                            DDLogError("[BUG TRACKER] Image is nil")
                         }
                         return
                     }
@@ -64,7 +65,7 @@ struct ImagePicker: UIViewControllerRepresentable {
                             self.parent.completion(file)
                         }
                     } catch {
-                        print("[BUG TRACKER] Error while accessing image: \(error)")
+                        DDLogError("[BUG TRACKER] Error while accessing image: \(error)")
                     }
                 }
             }

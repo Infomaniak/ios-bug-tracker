@@ -16,10 +16,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import InfomaniakDI
 import SwiftUI
 
 /// Main Bug Tracker view.
 public struct BugTrackerView: View {
+    @LazyInjectService var bugTracker: BugTracker
+
     @Binding var isPresented: Bool
 
     @State private var projects: [Project] = []
@@ -38,13 +41,15 @@ public struct BugTrackerView: View {
     ///   - isPresented: Binding to the boolean presenting the view.
     ///   - files: Array of files to add to the report by default.
     public init(isPresented: Binding<Bool>, files: [ReportFile] = []) {
+        // Bug tracker is needed here because we don't have self yet
+        @InjectService var bugTracker: BugTracker
         _isPresented = isPresented
         _report = State(initialValue: Report(bucketIdentifier: "",
                                              type: .bugs,
                                              priority: .normal,
                                              subject: "",
                                              description: "",
-                                             extra: BugTracker.instance.extra,
+                                             extra: bugTracker.extra,
                                              files: files))
         UIScrollView.appearance().keyboardDismissMode = .onDrag
     }
@@ -149,9 +154,9 @@ public struct BugTrackerView: View {
             Text(error.details)
         })
         .task {
-            guard let info = BugTracker.instance.info else { return }
+            let info = bugTracker.info
             do {
-                let buckets = try await BugTracker.instance.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
+                let buckets = try await bugTracker.buckets(route: info.route, project: info.project, serviceId: info.serviceId)
                 projects = buckets.list.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
                 guard let currentProject = buckets.list.first(where: { $0.title.caseInsensitiveCompare(buckets.current?.title ?? "") == .orderedSame }) else { return }
                 report.bucketIdentifier = currentProject.identifier
@@ -186,7 +191,7 @@ public struct BugTrackerView: View {
         isLoading = true
         Task {
             do {
-                result = try await BugTracker.instance.send(report: report)
+                result = try await bugTracker.send(report: report)
                 showingSuccessMessage = true
             } catch let error as ReportError {
                 print("[BUG TRACKER] Error while sending report: \(error)")

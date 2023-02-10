@@ -15,6 +15,7 @@ class FakeTokenDelegate: RefreshTokenDelegate {
 }
 
 final class InfomaniakBugTrackerTests: XCTestCase {
+    @LazyInjectService var bugTracker: BugTracker
     var currentApiFetcher: ApiFetcher!
 
     override class func setUp() {
@@ -22,6 +23,11 @@ final class InfomaniakBugTrackerTests: XCTestCase {
             InfomaniakNetworkLogin(clientId: "")
         }
         SimpleResolver.sharedResolver.store(factory: networkLoginService)
+        
+        let bugTracker = Factory(type: BugTracker.self) { _, _ in
+            BugTracker(info: BugTrackerInfo(project: "app-mobile-mail"))
+        }
+        SimpleResolver.sharedResolver.store(factory: bugTracker)
     }
 
     override func setUp() {
@@ -47,7 +53,7 @@ final class InfomaniakBugTrackerTests: XCTestCase {
                             priority: .normal,
                             subject: "Test",
                             description: "Please ignore me",
-                            extra: BugTracker.instance.extra,
+                            extra: bugTracker.extra,
                             files: [])
         let reportResult = try await currentApiFetcher.send(report: report)
         XCTAssert(!reportResult.url.isEmpty)
@@ -61,7 +67,7 @@ final class InfomaniakBugTrackerTests: XCTestCase {
                             priority: .normal,
                             subject: "Test Image",
                             description: "Please ignore me",
-                            extra: BugTracker.instance.extra,
+                            extra: bugTracker.extra,
                             files: [ReportFile(name: "attachment.png", data: attachment, uti: .image)])
         let reportResult = try await currentApiFetcher.send(report: report)
         XCTAssert(!reportResult.url.isEmpty)

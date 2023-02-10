@@ -22,10 +22,7 @@ import UIKit
 
 /// Bug Tracker class containing information needed by the library.
 public class BugTracker {
-    /// Shared Bug Tracker class instance.
-    public static let instance = BugTracker()
-
-    var info: BugTrackerInfo?
+    var info: BugTrackerInfo
     var apiFetcher: ApiFetcher?
     var screenshotObserver: NSObjectProtocol?
     var userAgent = "InfomaniakBugTracker/1"
@@ -33,9 +30,9 @@ public class BugTracker {
     /// Extra info dictionary sent along with every bug report.
     var extra: [String: String] {
         return [
-            "project": info?.project ?? "null",
-            "route": info?.route ?? "null",
-            "userAgent": BugTracker.instance.userAgent,
+            "project": info.project,
+            "route": info.route ?? "null",
+            "userAgent": userAgent,
             "platform": UIDevice.current.systemName,
             "os_version": UIDevice.current.systemVersion,
             "device": UIDevice.modelName,
@@ -44,13 +41,15 @@ public class BugTracker {
         ]
     }
 
-    private init() {}
-
     /// Configure the instance by setting the info object.
     /// - Parameter info: New info object
-    /// - Parameter apiFetcher: ApiFetcher for the current user
-    public func configure(with info: BugTrackerInfo, apiFetcher: ApiFetcher) {
+    public init(info: BugTrackerInfo) {
         self.info = info
+    }
+
+    /// Set the ApiFetcher for the current user.
+    /// - Parameter apiFetcher: ApiFetcher for the current user
+    public func configure(with apiFetcher: ApiFetcher) {
         self.apiFetcher = apiFetcher
     }
 

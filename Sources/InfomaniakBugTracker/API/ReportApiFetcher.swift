@@ -24,9 +24,21 @@ extension ApiEnvironment {
     var welcomeHost: String {
         return "welcome.\(host)"
     }
+
+    var gitHubApiHost: String {
+        return "api.github.com"
+    }
 }
 
 extension Endpoint {
+    static var gitHubRepos: Endpoint {
+        return Endpoint(hostKeypath: \.gitHubApiHost, path: "/repos/Infomaniak/")
+    }
+
+    static func releases(repo: String) -> Endpoint {
+        return .gitHubRepos.appending(path: repo).appending(path: "/releases")
+    }
+
     static var report: Endpoint {
         return Endpoint(hostKeypath: \.welcomeHost, path: "/api/components/report")
     }
@@ -45,6 +57,14 @@ extension ApiFetcher {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
+    }
+    
+    func releases(repo: String) async throws -> [GitHubRelease] {
+        let releasesEndpoint = Endpoint.releases(repo: repo)
+        let response = await AF.request(releasesEndpoint.url).serializingDecodable([GitHubRelease].self,
+                                                          automaticallyCancelling: true,
+                                                          decoder: reportDecoder).response
+        return try response.result.get()
     }
 
     func buckets(route: String? = nil, project: String, serviceId: Int? = nil) async throws -> Buckets {
@@ -71,12 +91,12 @@ extension ApiFetcher {
             // Multipart form data
             (contentType, body) = try multipartFormEncode(reportCopy, formEncoder: formEncoder)
         }
-        
+
         var request = try URLRequest(url: Endpoint.report.url, method: .post)
         if let contentType = contentType {
             request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         }
-        guard let body else {throw ReportError.invalidURL }
+        guard let body else { throw ReportError.invalidURL }
         return try await perform(request: authenticatedSession.upload(body, with: request), decoder: reportDecoder).data
     }
 

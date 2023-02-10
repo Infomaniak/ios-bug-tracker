@@ -29,6 +29,7 @@ public struct BugTrackerView: View {
     @State private var projects: [Project] = []
     @State private var reportTypes: [ReportType] = ReportType.allCases
     @State private var report: Report
+    @State private var isAppOutdated = true
     @State private var showingImagePicker = false
     @State private var showingDocumentPicker = false
     @State private var showingSuccessMessage = false
@@ -91,6 +92,15 @@ public struct BugTrackerView: View {
                                 .foregroundColor(Color(uiColor: .tertiaryLabel))
                                 .padding(.top, 8)
                         }
+                    }
+                } header: {
+                    if isAppOutdated {
+                        HStack(spacing: 16) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text(Translation.outdatedVersion)
+                        }
+                        .font(.title3)
+                        .foregroundColor(.red)
                     }
                 }
 
@@ -167,6 +177,16 @@ public struct BugTrackerView: View {
                 reportTypes = currentProject.allowedReportTypes
             } catch {
                 DDLogError("[BUG TRACKER] Error while fetching buckets: \(error)")
+            }
+        }
+        .task {
+            do {
+                let isAppOutdated = try await bugTracker.isAppOutdated()
+                withAnimation {
+                    self.isAppOutdated = isAppOutdated
+                }
+            } catch {
+                DDLogError("[BUG TRACKER] Error while fetching version: \(error)")
             }
         }
     }

@@ -23,9 +23,9 @@ final class InfomaniakBugTrackerTests: XCTestCase {
             InfomaniakNetworkLogin(clientId: "")
         }
         SimpleResolver.sharedResolver.store(factory: networkLoginService)
-        
+
         let bugTracker = Factory(type: BugTracker.self) { _, _ in
-            BugTracker(info: BugTrackerInfo(project: "app-mobile-mail"))
+            BugTracker(info: BugTrackerInfo(project: "app-mobile-mail", gitHubRepoName: "ios-mail", appReleaseType: .beta))
         }
         SimpleResolver.sharedResolver.store(factory: bugTracker)
     }
@@ -40,6 +40,17 @@ final class InfomaniakBugTrackerTests: XCTestCase {
                              userId: Env.userId,
                              expirationDate: Date(timeIntervalSinceNow: TimeInterval(Int.max)))
         currentApiFetcher.setToken(token, delegate: FakeTokenDelegate())
+        bugTracker.configure(with: currentApiFetcher)
+    }
+
+    func testGetReleases() async throws {
+        let releases = try await currentApiFetcher.releases(repo: "ios-mail")
+        XCTAssert(!releases.isEmpty)
+    }
+
+    func testGetLatestRelease() async throws {
+        let latestRelease = try await bugTracker.latestRelease()
+        XCTAssertNotNil(latestRelease)
     }
 
     func testGetBuckets() async throws {

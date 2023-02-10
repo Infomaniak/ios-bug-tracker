@@ -103,4 +103,18 @@ public class BugTracker {
         guard let apiFetcher else { fatalError("BugTracker must be configured with an ApiFetcher") }
         return try await apiFetcher.send(report: report)
     }
+
+    func latestRelease() async throws -> GitHubRelease? {
+        guard let apiFetcher else { fatalError("BugTracker must be configured with an ApiFetcher") }
+        guard let gitHubRepoName = info.gitHubRepoName else { return nil }
+        let releases = try await apiFetcher.releases(repo: gitHubRepoName)
+
+        return releases.first { !$0.draft && !$0.prerelease }
+    }
+
+    func isAppOutdated() async throws -> Bool {
+        guard let latestRelease = try await latestRelease(),
+              let appVersionName = info.appVersionName else { return false }
+        return latestRelease.name != appVersionName
+    }
 }

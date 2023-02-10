@@ -37,6 +37,7 @@ struct Translation {
     static let buttonOK = localizedString(key: "buttonOK")
     static let issueSuccessfullyCreated = localizedString(key: "Issue successfully created")
     static let errorInvalidURL = localizedString(key: "errorInvalidURL")
+    static let outdatedVersion = localizedString(key: "outdatedVersion")
 
     static func errorHTTP(code: Int) -> String {
         localizedString(key: "errorHTTP", code)

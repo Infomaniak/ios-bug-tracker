@@ -48,3 +48,4 @@
 "alertReportScreenshotTitle" = "Souhaitez-vous envoyer cette capture avec le bug tracker ?";
 "buttonYes" = "Oui";
 "buttonNo" = "Non";
+"outdatedVersion" = "Attention: Votre app n'est pas à jour";

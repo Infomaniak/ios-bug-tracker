@@ -107,7 +107,7 @@ public class BugTracker {
             reportCopy.subject = "\(subjectPrefix)\(reportCopy.subject)"
         }
 
-        return try await apiFetcher.send(report: report)
+        return try await apiFetcher.send(report: reportCopy)
     }
 
     func latestRelease() async throws -> GitHubRelease? {

@@ -69,7 +69,7 @@ extension ApiFetcher {
 
     func buckets(route: String? = nil, project: String, serviceId: Int? = nil) async throws -> Buckets {
         try await perform(request: authenticatedRequest(.buckets(route: route, project: project, serviceId: serviceId)),
-                          decoder: reportDecoder).data
+                          decoder: reportDecoder)
     }
 
     func send(report: Report) async throws -> ReportResult {
@@ -91,7 +91,7 @@ extension ApiFetcher {
             request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         }
         guard let body else { throw ReportError.invalidURL }
-        return try await perform(request: authenticatedSession.upload(body, with: request), decoder: reportDecoder).data
+        return try await perform(request: authenticatedSession.upload(body, with: request), decoder: reportDecoder)
     }
 
     private func multipartFormEncode(_ value: Encodable, formEncoder: URLEncodedFormEncoder) throws -> (String, Data) {

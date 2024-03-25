@@ -24,21 +24,9 @@ extension ApiEnvironment {
     var welcomeHost: String {
         return "welcome.\(host)"
     }
-
-    var gitHubApiHost: String {
-        return "api.github.com"
-    }
 }
 
 extension Endpoint {
-    static var gitHubRepos: Endpoint {
-        return Endpoint(hostKeypath: \.gitHubApiHost, path: "/repos/Infomaniak/")
-    }
-
-    static func releases(repo: String) -> Endpoint {
-        return .gitHubRepos.appending(path: repo).appending(path: "/releases")
-    }
-
     static var report: Endpoint {
         return Endpoint(hostKeypath: \.welcomeHost, path: "/api/components/report")
     }
@@ -57,14 +45,6 @@ extension ApiFetcher {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
-    }
-    
-    func releases(repo: String) async throws -> [GitHubRelease] {
-        let releasesEndpoint = Endpoint.releases(repo: repo)
-        let response = await AF.request(releasesEndpoint.url).serializingDecodable([GitHubRelease].self,
-                                                          automaticallyCancelling: true,
-                                                          decoder: reportDecoder).response
-        return try response.result.get()
     }
 
     func buckets(route: String? = nil, project: String, serviceId: Int? = nil) async throws -> Buckets {
@@ -97,7 +77,7 @@ extension ApiFetcher {
     private func multipartFormEncode(_ value: Encodable, formEncoder: URLEncodedFormEncoder) throws -> (String, Data) {
         let component: URLEncodedFormComponent = try formEncoder.encode(value)
 
-        guard case let .object(object) = component else {
+        guard case .object(let object) = component else {
             throw URLEncodedFormEncoder.Error.invalidRootObject("\(component)")
         }
 

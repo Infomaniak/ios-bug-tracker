@@ -16,13 +16,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Infomaniak/ios-core", .upToNextMajor(from: "8.0.0")),
+        .package(url: "https://github.com/Infomaniak/ios-core", .upToNextMajor(from: "9.0.0")),
+        .package(url: "https://github.com/Infomaniak/ios-version-checker", .upToNextMajor(from: "4.0.0")),
     ],
     targets: [
         .target(
             name: "InfomaniakBugTracker",
             dependencies: [
                 .product(name: "InfomaniakCore", package: "ios-core"),
+                .product(name: "VersionChecker", package: "ios-version-checker"),
             ]
         ),
         .testTarget(

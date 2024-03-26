@@ -20,6 +20,7 @@ import CocoaLumberjackSwift
 import InfomaniakCore
 import SwiftUI
 import UIKit
+import VersionChecker
 
 /// Bug Tracker class containing information needed by the library.
 public class BugTracker {
@@ -75,7 +76,11 @@ public class BugTracker {
             let snapshot = keyWindow?.makeSnapshot()
 
             // Present alert asking for bug report
-            let alertController = UIAlertController(title: Translation.alertReportScreenshotTitle, message: nil, preferredStyle: .alert)
+            let alertController = UIAlertController(
+                title: Translation.alertReportScreenshotTitle,
+                message: nil,
+                preferredStyle: .alert
+            )
             alertController.addAction(UIAlertAction(title: Translation.buttonYes, style: .default) { _ in
                 willPresent?()
                 var files = [ReportFile]()
@@ -110,17 +115,8 @@ public class BugTracker {
         return try await apiFetcher.send(report: reportCopy)
     }
 
-    func latestRelease() async throws -> GitHubRelease? {
-        guard let apiFetcher else { fatalError("BugTracker must be configured with an ApiFetcher") }
-        guard let gitHubRepoName = info.gitHubRepoName else { return nil }
-        let releases = try await apiFetcher.releases(repo: gitHubRepoName)
-
-        return releases.first { !$0.draft && !$0.prerelease }
-    }
-
     func isAppOutdated() async throws -> Bool {
-        guard let latestRelease = try await latestRelease(),
-              let appVersionName = info.appVersionName else { return false }
-        return latestRelease.name != appVersionName
+        let versionStatus = try await VersionChecker.standard.checkAppVersionStatus()
+        return versionStatus != .isUpToDate
     }
 }

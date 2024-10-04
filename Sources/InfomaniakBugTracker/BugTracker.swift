@@ -16,7 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CocoaLumberjackSwift
+import OSLog
 import InfomaniakCore
 import SwiftUI
 import UIKit
@@ -69,7 +69,7 @@ public class BugTracker {
                 .first(where: \.isKeyWindow)
 
             guard let visibleViewController = keyWindow?.visibleViewController else {
-                DDLogInfo("[BUG TRACKER] Screenshot detected but no view controller to present from found")
+                Logger.general.warning("Screenshot detected but no view controller to present from found")
                 return
             }
 

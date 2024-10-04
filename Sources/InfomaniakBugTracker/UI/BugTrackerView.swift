@@ -16,8 +16,8 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CocoaLumberjackSwift
 import InfomaniakDI
+import OSLog
 import SwiftUI
 
 /// Main Bug Tracker view.
@@ -176,7 +176,7 @@ public struct BugTrackerView: View {
                 }
                 reportTypes = currentProject.allowedReportTypes
             } catch {
-                DDLogError("[BUG TRACKER] Error while fetching buckets: \(error)")
+                Logger.general.error("Error while fetching buckets: \(error)")
             }
         }
         .task {
@@ -186,7 +186,7 @@ public struct BugTrackerView: View {
                     self.isAppOutdated = isAppOutdated
                 }
             } catch {
-                DDLogError("[BUG TRACKER] Error while fetching version: \(error)")
+                Logger.general.error("Error while fetching version: \(error)")
             }
         }
     }
@@ -215,11 +215,11 @@ public struct BugTrackerView: View {
                 result = try await bugTracker.send(report: report)
                 showingSuccessMessage = true
             } catch let error as ReportError {
-                DDLogError("[BUG TRACKER] Error while sending report: \(error)")
+                Logger.general.error("Error while sending report: \(error)")
                 self.error = error
                 showingErrorMessage = true
             } catch {
-                DDLogError("[BUG TRACKER] Error while sending report: \(error)")
+                Logger.general.error("Error while sending report: \(error)")
             }
             isLoading = false
         }

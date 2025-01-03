@@ -17,7 +17,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Infomaniak/ios-core", .upToNextMajor(from: "13.0.0")),
-        .package(url: "https://github.com/Infomaniak/ios-version-checker", .upToNextMajor(from: "7.0.0")),
+        .package(url: "https://github.com/Infomaniak/ios-version-checker", .upToNextMajor(from: "8.0.0")),
     ],
     targets: [
         .target(

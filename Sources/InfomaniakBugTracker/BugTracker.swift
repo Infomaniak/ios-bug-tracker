@@ -57,6 +57,7 @@ public class BugTracker {
 
     /// Starts observing when the user takes a screenshot to present the bug tracker view automatically.
     public func activateOnScreenshot(willPresent: (() -> Void)? = nil) {
+        NotificationCenter.default.removeObserver(screenshotObserver as Any)
         screenshotObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.userDidTakeScreenshotNotification,
             object: nil,

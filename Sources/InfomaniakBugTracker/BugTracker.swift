@@ -16,8 +16,8 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OSLog
 import InfomaniakCore
+import OSLog
 import SwiftUI
 import UIKit
 import VersionChecker
@@ -111,6 +111,9 @@ public class BugTracker {
         var reportCopy = report
         if !reportCopy.subject.hasPrefix(subjectPrefix) {
             reportCopy.subject = "\(subjectPrefix)\(reportCopy.subject)"
+        }
+        if reportCopy.description.isEmpty {
+            reportCopy.description = "Pas de description fournie"
         }
 
         return try await apiFetcher.send(report: reportCopy)

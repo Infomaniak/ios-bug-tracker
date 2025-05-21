@@ -28,7 +28,7 @@ extension ApiEnvironment {
 
 extension Endpoint {
     static var report: Endpoint {
-        return Endpoint(hostKeypath: \.welcomeHost, path: "/api/components/report")
+        return Endpoint(hostKeypath: \.welcomeHost, path: "/api/web-components/1/report")
     }
 
     static func buckets(route: String? = nil, project: String, serviceId: Int? = nil) -> Endpoint {

@@ -14,8 +14,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Infomaniak/ios-core",
       "state" : {
-        "revision" : "f9664e0b91a79d86373cafa87f89e0a45deb3128",
-        "version" : "15.0.0"
+        "revision" : "37a2e5ae289d6e68a2661efef1a0364383a66cfe",
+        "version" : "15.4.1"
+      }
+    },
+    {
+      "identity" : "ios-core-ui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Infomaniak/ios-core-ui",
+      "state" : {
+        "revision" : "c9292b394e995e60d444e2bd0c231b7e5caf5719",
+        "version" : "19.0.0"
       }
     },
     {
@@ -41,8 +50,26 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Infomaniak/ios-version-checker",
       "state" : {
-        "revision" : "050e58bf34ad61db90c2426f8d8fd6a4b49fabf0",
-        "version" : "10.0.0"
+        "revision" : "6cdbcc6c0d88fb3d6a5757571abbfe9cda5e42a4",
+        "version" : "11.0.0"
+      }
+    },
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher",
+      "state" : {
+        "revision" : "2ef543ee21d63734e1c004ad6c870255e8716c50",
+        "version" : "7.12.0"
+      }
+    },
+    {
+      "identity" : "matomo-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/matomo-org/matomo-sdk-ios",
+      "state" : {
+        "revision" : "82a1f3b18215381e2133d98b7cc09b5a855ff99d",
+        "version" : "7.7.0"
       }
     },
     {
@@ -79,6 +106,51 @@
       "state" : {
         "revision" : "0c34e4da899a1dd9183db04082d1ceb6e9c2b301",
         "version" : "8.44.0"
+      }
+    },
+    {
+      "identity" : "snackbar.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Infomaniak/SnackBar.swift",
+      "state" : {
+        "revision" : "7d8d20af50c6b744aa9791b597f7efbd0a15add2",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "snapkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SnapKit/SnapKit.git",
+      "state" : {
+        "revision" : "2842e6e84e82eb9a8dac0100ca90d9444b0307f4",
+        "version" : "5.7.1"
+      }
+    },
+    {
+      "identity" : "swiftbackports",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shaps80/SwiftBackports",
+      "state" : {
+        "revision" : "ddca6a237c1ba2291d5a3cc47ec8480ce6e9f805",
+        "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "swiftui-introspect",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/siteline/SwiftUI-Introspect",
+      "state" : {
+        "revision" : "c2b0625d0ef385994e4c6bc36116c0e7bfa6dafa",
+        "version" : "1.4.0-beta.2"
+      }
+    },
+    {
+      "identity" : "swiftuibackports",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shaps80/SwiftUIBackports",
+      "state" : {
+        "revision" : "556d42f391b74059a354b81b8c8e19cc7cb576f4",
+        "version" : "1.15.1"
       }
     }
   ],

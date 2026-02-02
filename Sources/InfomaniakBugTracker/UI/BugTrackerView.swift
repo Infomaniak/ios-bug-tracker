@@ -137,6 +137,8 @@ public struct BugTrackerView: View {
                         ProgressView()
                     } else {
                         Button(Translation.buttonSubmit, action: submit)
+                            .disabled(report.description.isEmpty ||
+                                report.subject.isEmpty)
                     }
                 }
             }

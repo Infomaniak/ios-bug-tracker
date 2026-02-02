@@ -21,7 +21,7 @@
 "fieldType" = "Type";
 "fieldPriority" = "Priorité";
 "fieldSubject" = "Sujet";
-"fieldDescription" = "Description";
+"fieldDescription" = "Description (obligatoire)";
 "sectionFilesHeader" = "Fichiers";
 "sectionsFilesFooter" = "Vous pouvez ajouter des fichiers (32 Mo maximum) pour aider à mieux comprendre votre bug.";
 "buttonAddFile" = "Ajouter un fichier";

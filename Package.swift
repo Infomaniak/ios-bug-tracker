@@ -7,7 +7,7 @@ let package = Package(
     name: "InfomaniakBugTracker",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v15),
+        .iOS(.v16),
     ],
     products: [
         .library(
@@ -16,8 +16,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Infomaniak/ios-core", .upToNextMajor(from: "18.0.0")),
-        .package(url: "https://github.com/Infomaniak/ios-version-checker", .upToNextMajor(from: "16.0.0")),
+        .package(url: "https://github.com/Infomaniak/ios-core", .upToNextMajor(from: "18.12.0")),
+        .package(url: "https://github.com/Infomaniak/ios-version-checker", .upToNextMajor(from: "17.0.0")),
     ],
     targets: [
         .target(

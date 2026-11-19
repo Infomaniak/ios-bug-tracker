@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Infomaniak/ios-core",
       "state" : {
-        "revision" : "a2ccfeadb409fb6664213dc534f27ea5857ede72",
-        "version" : "21.0.0"
+        "revision" : "211cbcb3e8aad90fa6ae7bc92b1b9d58d6cb9f8c",
+        "version" : "22.0.0"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Infomaniak/ios-core-ui",
       "state" : {
-        "revision" : "66fa8f505bd911eef59a1c8454248a9f59c4a9af",
-        "version" : "29.0.0"
+        "revision" : "608c8ce38889be456904c84c9e118dad64498928",
+        "version" : "30.0.0"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Infomaniak/ios-version-checker",
       "state" : {
-        "revision" : "d5d223a46d240e0d8ce8839ac767a21006efba7b",
-        "version" : "21.0.0"
+        "revision" : "401d0118d029a7cb75f4e527aa3efdd2991c8e0a",
+        "version" : "22.0.0"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/siteline/SwiftUI-Introspect",
       "state" : {
-        "revision" : "aead9358a55f635d62d885aeb9105752c0213aec",
-        "version" : "27.0.0-beta.1"
+        "revision" : "7f76fe19415a60ce28493c5ec67b8da629f27a44",
+        "version" : "27.1.0"
       }
     }
   ],
